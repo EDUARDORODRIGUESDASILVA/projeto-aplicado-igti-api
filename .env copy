@@ -1,0 +1,10 @@
+PORT=7000
+ROOT_USER='admin'
+ROOT_PASS='desafio-igti-nodejs'
+DB_NAME='SR2625'
+DB_USER='USER_DEVELOP'
+DB_HOST='localhost'
+DB_DRIVER='mssql'
+DB_SCHEMA = 'igti'
+DB_PASSWORD='PazNaUcrania22'
+NODE_ENV= 'development'
