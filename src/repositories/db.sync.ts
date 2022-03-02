@@ -3,23 +3,27 @@ import logger from '../lib/logger'
 
 import db from './db.config'
 import Produto from './models/Produto'
+import Unidade from './models/Unidade'
+import Usuario from './models/Usuario'
 
 const isDev = process.env.NODE_ENV === 'development'
 
 async function sync (req: Request, res: Response, next: NextFunction) {
-  console.log('NODE_ENV:', process.env.NODE_ENV)
   try {
     await db.authenticate()
     logger.info('Connection has been established successfully.')
   } catch (error) {
-    logger.info('Unable to connect to the database:', error)
+    logger.error('Unable to connect to the database:', error)
   }
 
   try {
+    await Unidade.sync({ alter: isDev })
+    await Usuario.sync({ alter: isDev })
     await Produto.sync({ alter: isDev })
+
     await db.sync()
   } catch (error) {
-    logger.info('Unable to sync database', error)
+    logger.error('Unable to sync database', error)
   }
   next()
 }

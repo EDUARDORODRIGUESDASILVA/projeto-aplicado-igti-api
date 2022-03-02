@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv'
-import express, { NextFunction } from 'express'
+import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 
@@ -7,7 +7,6 @@ import logger from './lib/logger'
 import sync from './repositories/db.sync'
 // import { basicAuth } from './lib/auth.middleware'
 import routes from './routes'
-import { handleError } from './lib/error.handler'
 dotenv.config()
 
 if (!process.env.PORT) {
@@ -33,9 +32,8 @@ app.get('/', (req, res) => {
 // app.use('/api/v1', routes)
 app.use('/api/v1', routes)
 
-app.use(handleError)
-
-app.use((err: any, req: any, res: any, next: NextFunction) => {
+// app.use(handleError)
+app.use((err: any, req: any, res: any, next: any) => {
   res.status(500).json({
     status: 'error',
     statusCode: 500,
