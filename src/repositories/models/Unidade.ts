@@ -1,4 +1,4 @@
-import { DataTypes, Model, Optional } from 'sequelize'
+import { DataTypes, Model } from 'sequelize'
 import IUnidade from '../../core/interfaces/IUnidade'
 import sequelizeConnection from '../db.config'
 
@@ -8,11 +8,10 @@ interface UnidadeAttributes extends IUnidade {
     updatedAt?: Date;
     deletedAt?: Date;
 }
-export interface ProdutoInput extends Optional<UnidadeAttributes, 'id' > { }
-export interface ProdutoOuput extends Required<UnidadeAttributes> { }
+// export interface ProdutoInput extends Optional<UnidadeAttributes, 'id' > { }
+// export interface ProdutoOuput extends Required<UnidadeAttributes> { }
 
-class Unidade extends Model<UnidadeAttributes, ProdutoInput> implements UnidadeAttributes {
-    icOrdem?: number | undefined;
+class Unidade extends Model<UnidadeAttributes, UnidadeAttributes> implements UnidadeAttributes {
     id!: number;
     nome!: string;
     tipo!: string;
@@ -21,7 +20,9 @@ class Unidade extends Model<UnidadeAttributes, ProdutoInput> implements UnidadeA
     nivel!: number;
     se!: number;
     sr!: number;
+    vinc!: number;
     rede!: string;
+    icOrdem?: number | undefined;
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -57,6 +58,10 @@ Unidade.init({
     allowNull: false
   },
 
+  vinc: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
   se: {
     type: DataTypes.INTEGER,
     allowNull: false
@@ -73,6 +78,7 @@ Unidade.init({
   }
 }, {
   timestamps: true,
+  underscored: true,
   sequelize: sequelizeConnection,
   paranoid: true
 })

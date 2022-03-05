@@ -8,5 +8,5 @@ router.post('/', produtoController.create)
 router.delete('/:id', produtoController.destroy)
 router.put('/', produtoController.update)
 router.get('/', produtoController.getAll)
-router.get('/:id', produtoController.getById)
+router.get('/:codsidem', produtoController.getByCodSidem)
 export default router

@@ -14,6 +14,20 @@ async function getNtmlUser (): Promise<string> {
   // TODO query NTLM api here
   return await Promise.resolve('C090695')
 }
+
+async function createUser (user: IUser) {
+  return await userRepository.create(user)
+}
+
+async function update (user: IUser) {
+  const matr = user.matricula
+  return await userRepository.update(matr, user)
+}
+
+async function deleteByMatricula (matricula: string): Promise<boolean> {
+  return await userRepository.deleteByMatricula(matricula)
+}
+
 export default {
-  getUserByMatricula, getLoggedUser
+  getUserByMatricula, getLoggedUser, createUser, update, deleteByMatricula
 }

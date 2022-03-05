@@ -1,11 +1,12 @@
 export default interface IUnidade {
     id: number
-    nome: string,
-    tipo: string,
-    porte: number,
+    nome: string
+    tipo: string
+    porte: number
     cluster: string
-    nivel: number,
+    nivel: number
     se: number
     sr: number
     rede: string
+    vinc: number
 }

@@ -22,6 +22,15 @@ async function update (id: number, payload: Partial<ProdutoInput>): Promise<Ipro
   return updatedProduto
 }
 
+async function getByCodSidem (codsidem: string): Promise<Iproduto> {
+  const produto = await Produto.findOne({ where: { codsidem } })
+  if (!produto) {
+    // @todo throw custom error
+    throw new Error('not found')
+  }
+  return produto
+}
+
 async function getById (id: number): Promise<Iproduto> {
   const produto = await Produto.findByPk(id)
   if (!produto) {
@@ -37,5 +46,5 @@ async function getAll (): Promise<Iproduto[]> {
 }
 
 export default {
-  create, deleteById, update, getById, getAll
+  create, deleteById, update, getById, getAll, getByCodSidem
 }

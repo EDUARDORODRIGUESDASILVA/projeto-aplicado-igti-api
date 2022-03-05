@@ -1,6 +1,6 @@
 export default interface IUser {
   matricula: string
-  nome: string,
+  nome: string
   funcao: string
   unidadeId: number
 }

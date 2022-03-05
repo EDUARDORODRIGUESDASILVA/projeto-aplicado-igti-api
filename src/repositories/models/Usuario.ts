@@ -1,16 +1,17 @@
 import { DataTypes, Model } from 'sequelize'
 import IUser from '../../core/interfaces/IUser'
 import sequelizeConnection from '../db.config'
+import Unidade from './Unidade'
 
 interface UsuarioAttributes extends IUser {
     createdAt?: Date;
     updatedAt?: Date;
     deletedAt?: Date;
 }
-export interface UsuarioInput extends Required<UsuarioAttributes> { }
-export interface UsuarioOuput extends Required<UsuarioAttributes> { }
+// export interface UsuarioInput extends Optional<ProdutoAttributes, 'id'> { }
+// export interface UsuarioOuput extends Required<UsuarioAttributes> { }
 
-class Usuario extends Model<UsuarioAttributes, UsuarioInput> implements UsuarioAttributes {
+class Usuario extends Model<UsuarioAttributes, UsuarioAttributes> implements UsuarioAttributes {
     public matricula!: string;
     public nome!: string;
     public funcao!: string;
@@ -44,7 +45,8 @@ Usuario.init({
 }, {
   timestamps: true,
   sequelize: sequelizeConnection,
+  underscored: true,
   paranoid: true
 })
-
+Usuario.belongsTo(Unidade, { foreignKey: 'unidade_id' })
 export default Usuario
