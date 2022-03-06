@@ -6,6 +6,6 @@ router.post('/', unidadesController.create)
 router.delete('/:id', unidadesController.deleteById)
 router.put('/', unidadesController.update)
 router.get('/:id', unidadesController.getById)
-router.get('/vinc/:id', unidadesController.getByParentId)
+router.get('/', unidadesController.getByQueryParams)
 
 export default router

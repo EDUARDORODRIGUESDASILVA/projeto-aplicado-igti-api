@@ -1,5 +1,5 @@
-#database.sqslite
-database.sqslite
+#database.sqlite
+database.sqlite
 {
 .pytest_cache
 

@@ -1,5 +1,6 @@
 import IUnidade from '../core/interfaces/IUnidade'
 import unidadeRepository from '../repositories/unidade.repository'
+import { IUnidadeQueryInput } from './interfaces/unidade.query.interface.input'
 
 async function create (unidade: IUnidade) {
   return await unidadeRepository.create(unidade)
@@ -18,10 +19,10 @@ async function getById (id: number) {
   return await unidadeRepository.getById(id)
 }
 
-async function getByParentId (id: number) {
-  return await unidadeRepository.getByVincId(id)
+async function getByQuery (query: IUnidadeQueryInput) {
+  return await unidadeRepository.getByQuery(query)
 }
 
 export default {
-  create, deleteById, update, getById, getByParentId
+  create, deleteById, update, getById, getByQuery
 }

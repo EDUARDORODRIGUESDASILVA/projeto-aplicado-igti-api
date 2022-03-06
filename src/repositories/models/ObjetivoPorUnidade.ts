@@ -1,61 +1,102 @@
 import { DataTypes, Model, Optional } from 'sequelize'
-import IProduto from '../../core/interfaces/IProduto'
+import { IObjetivoUnidade } from '../../core/interfaces/IObjetivoUnidade'
 import sequelizeConnection from '../db.config'
+// import Produto from './Produto'
+// import Unidade from './Unidade'
+// import Usuario from './Usuario'
 
-interface ProdutoAttributes extends IProduto {
-    icOrdem?: number;
-    createdAt?: Date;
-    updatedAt?: Date;
-    deletedAt?: Date;
+interface ObjetivoPorUnidadeAttributes extends IObjetivoUnidade {
+  icOrdem?: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
 }
-export interface ProdutoInput extends Optional<ProdutoAttributes, 'id' > { }
-export interface ProdutoOuput extends Required<ProdutoAttributes> { }
+export interface ObjetivoPorUnidadeInput extends Optional<ObjetivoPorUnidadeAttributes, 'id'> { }
+// export interface ProdutoOuput extends Required<ProdutoAttributes> { }
 
-class Produto extends Model<ProdutoAttributes, ProdutoInput> implements ProdutoAttributes {
-    public id!: number;
-    public codsidem!: string;
-    public nome!: string;
-    public bloco!: string;
-    public conquiste!: string;
-    // timestamps!
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
-    public readonly deletedAt!: Date;
+class ObjetivoPorUnidade extends Model<ObjetivoPorUnidadeAttributes, ObjetivoPorUnidadeInput> implements ObjetivoPorUnidadeAttributes {
+  id!: number;
+  produtoId!: number;
+  unidadeId!: number;
+  metaReferencia!: number;
+  metaReferencia2!: number;
+  metaAjustada!: number;
+  metaMinima!: number;
+  trocas!: number;
+  trava!: string;
+  erros!: number;
+  userId!: string;
+  // timestamps!
+  icOrdem?: number | undefined;
+
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
+  public readonly deletedAt!: Date;
 }
 
-Produto.init({
+ObjetivoPorUnidade.init({
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true
   },
-  codsidem: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true
-  },
-  nome: {
-    type: DataTypes.STRING,
+  produtoId: {
+    type: DataTypes.INTEGER,
     allowNull: false
   },
-  bloco: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  conquiste: {
-    type: DataTypes.STRING,
+  unidadeId: {
+    type: DataTypes.INTEGER,
     allowNull: false
   },
 
-  icOrdem: {
+  metaReferencia: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+
+  metaReferencia2: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  metaAjustada: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  metaMinima: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+
+  trocas: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  trava: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  erros: {
     type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  userId: {
+    type: DataTypes.STRING,
     allowNull: false
   }
 }, {
   timestamps: true,
-  sequelize: sequelizeConnection,
-  paranoid: true
+  sequelize: sequelizeConnection
+  // underscored: true
+  // paranoid: true
 })
 
-export default Produto
+// TODO FIX RELATIONS ON OBJETIVO POR UNIDADE
+// ObjetivoPorUnidade.belongsTo(Unidade, { foreignKey: 'unidadeId' })
+// Venda.hasOne(Cliente)
+
+// ObjetivoPorUnidade.belongsTo(Produto, { foreignKey: 'produtoId' })
+// ObjetivoPorUnidade.belongsTo(Usuario, { foreignKey: 'userId' })
+// Venda.hasOne(Livro)
+
+export default ObjetivoPorUnidade

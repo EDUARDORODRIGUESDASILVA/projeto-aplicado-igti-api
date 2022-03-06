@@ -78,9 +78,9 @@ Unidade.init({
   }
 }, {
   timestamps: true,
-  underscored: true,
-  sequelize: sequelizeConnection,
-  paranoid: true
+  // underscored: true,
+  sequelize: sequelizeConnection
+  // paranoid: true
 })
 
 export default Unidade

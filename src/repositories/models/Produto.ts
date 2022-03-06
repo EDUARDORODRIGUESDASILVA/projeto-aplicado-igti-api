@@ -54,6 +54,7 @@ Produto.init({
   }
 }, {
   timestamps: true,
+  // underscored: true,
   sequelize: sequelizeConnection,
   paranoid: true
 })

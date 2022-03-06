@@ -1,4 +1,5 @@
 import IUnidade from '../core/interfaces/IUnidade'
+import { IUnidadeQueryInput } from '../services/interfaces/unidade.query.interface.input'
 import Unidade from './models/Unidade'
 
 async function getById (id: number): Promise<IUnidade> {
@@ -31,10 +32,29 @@ async function deleteById (id: number): Promise<boolean> {
   return !!deletedUnidadeCount
 }
 
-async function getByVincId (vinc: number): Promise<IUnidade[]> {
-  return await Unidade.findAll({ where: { vinc } })
+async function getByQuery (query: IUnidadeQueryInput): Promise<IUnidade[]> {
+  const sr = query.sr
+  const nivel = query.nivel
+  if (sr) {
+    if (nivel) {
+      return Unidade.findAll({ where: { sr, nivel } })
+    }
+    return Unidade.findAll({ where: { sr } })
+  }
+
+  const se = query.se
+  if (se) {
+    return Unidade.findAll({ where: { se } })
+  }
+
+  const vinc = query.vinc
+  if (vinc) {
+    return Unidade.findAll({ where: { vinc } })
+  }
+
+  return await Unidade.findAll({})
 }
 
 export default {
-  getById, create, update, deleteById, getByVincId
+  getById, create, update, deleteById, getByQuery
 }

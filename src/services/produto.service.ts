@@ -11,10 +11,6 @@ async function deleteById (produtoId: number) {
 }
 
 async function update (produto: IProduto) {
-  // if (typeof (produto.produtoId) === 'undefined') {
-  //   throw new Error('produtoId must be numeric')
-  // }
-
   const id: number = produto.id
   return await produtoRepository.update(id, produto)
 }

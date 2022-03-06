@@ -32,7 +32,7 @@ Usuario.init({
   nome: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true
+    unique: false
   },
   funcao: {
     type: DataTypes.STRING,
@@ -45,8 +45,8 @@ Usuario.init({
 }, {
   timestamps: true,
   sequelize: sequelizeConnection,
-  underscored: true,
+  // underscored: true
   paranoid: true
 })
-Usuario.belongsTo(Unidade, { foreignKey: 'unidade_id' })
+Usuario.belongsTo(Unidade, { foreignKey: 'unidadeId' })
 export default Usuario

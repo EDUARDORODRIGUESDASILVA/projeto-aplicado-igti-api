@@ -3,6 +3,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 import unidadeService from '../services/unidade.service'
 import IUnidade from '../core/interfaces/IUnidade'
+import { IUnidadeQueryInput } from '../services/interfaces/unidade.query.interface.input'
 
 async function create (req: Request, res: Response, next: NextFunction) {
   try {
@@ -74,10 +75,26 @@ async function getById (req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function getByParentId (req: Request, res: Response, next: NextFunction) {
+async function getByQueryParams (req: Request, res: Response, next: NextFunction) {
   try {
-    const id = parseInt(req.params.id)
-    const unidades = await unidadeService.getByParentId(id)
+    const query: IUnidadeQueryInput = {}
+    if (req.query.sr as string) {
+      query.sr = parseInt(req.query.sr as string)
+    }
+
+    if (req.query.se as string) {
+      query.se = parseInt(req.query.se as string)
+    }
+    if (req.query.vinc as string) {
+      query.vinc = parseInt(req.query.vinc as string)
+    }
+
+    if (req.query.nivel as string) {
+      query.nivel = parseInt(req.query.nivel as string)
+    }
+
+    console.log('query params', req.query, query)
+    const unidades = await unidadeService.getByQuery(query)
     return res.status(200).send(unidades)
   } catch (error) {
     next(error)
@@ -101,5 +118,5 @@ export default {
   update,
   getById,
   deleteById,
-  getByParentId
+  getByQueryParams
 }
