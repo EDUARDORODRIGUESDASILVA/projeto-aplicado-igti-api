@@ -21,10 +21,9 @@ async function sync (req: Request, res: Response, next: NextFunction) {
     const sync = false
     if (sync && isDev) {
       await ObjetivoPorUnidade.sync({ alter: isDev, force: false })
-      await Unidade.sync({ alter: isDev })
-      await Usuario.sync({ alter: isDev })
-      await Produto.sync({ alter: isDev })
-
+      await Produto.sync({ alter: isDev, force: false })
+      // await Unidade.sync({ alter: isDev })
+      // await Usuario.sync({ alter: isDev })
     //  await db.sync()
     }
   } catch (error) {

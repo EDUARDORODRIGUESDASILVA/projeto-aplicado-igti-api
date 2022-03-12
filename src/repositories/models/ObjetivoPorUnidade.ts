@@ -1,9 +1,9 @@
 import { DataTypes, Model, Optional } from 'sequelize'
 import { IObjetivoUnidade } from '../../core/interfaces/IObjetivoUnidade'
 import sequelizeConnection from '../db.config'
-// import Produto from './Produto'
-// import Unidade from './Unidade'
-// import Usuario from './Usuario'
+import Produto from './Produto'
+import Unidade from './Unidade'
+import Usuario from './Usuario'
 
 interface ObjetivoPorUnidadeAttributes extends IObjetivoUnidade {
   icOrdem?: number;
@@ -92,11 +92,11 @@ ObjetivoPorUnidade.init({
 })
 
 // TODO FIX RELATIONS ON OBJETIVO POR UNIDADE
-// ObjetivoPorUnidade.belongsTo(Unidade, { foreignKey: 'unidadeId' })
+ObjetivoPorUnidade.belongsTo(Unidade, { foreignKey: 'unidadeId' })
 // Venda.hasOne(Cliente)
 
-// ObjetivoPorUnidade.belongsTo(Produto, { foreignKey: 'produtoId' })
-// ObjetivoPorUnidade.belongsTo(Usuario, { foreignKey: 'userId' })
+ObjetivoPorUnidade.belongsTo(Produto, { foreignKey: 'produtoId' })
+ObjetivoPorUnidade.belongsTo(Usuario, { foreignKey: 'userId' })
 // Venda.hasOne(Livro)
 
 export default ObjetivoPorUnidade

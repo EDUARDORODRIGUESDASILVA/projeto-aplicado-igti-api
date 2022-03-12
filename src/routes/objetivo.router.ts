@@ -8,6 +8,10 @@ router.post('/', objetivoController.create)
 router.put('/', objetivoController.update)
 router.delete('/:id', objetivoController.deleteById)
 
-router.get('/', objetivoController.getAll)
+router.get('/', objetivoController.getByQuery)
 router.get('/:id', objetivoController.getById)
+
+router.get('/agregador/:id', objetivoController.totalizaAgregador)
+router.get('/ajustar/:unidadeId/:produtoId', objetivoController.getAjustePorAgregador)
+
 export default router

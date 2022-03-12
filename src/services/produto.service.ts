@@ -19,14 +19,14 @@ async function getByCodSidem (codsidem: string) {
   return await produtoRepository.getByCodSidem(codsidem)
 }
 
-// async function getById (id: number) {
-//   return await produtoRepository.getById(id)
-// }
+async function getById (id: number) {
+  return await produtoRepository.getById(id)
+}
 
 async function getAll () {
   return await produtoRepository.getAll()
 }
 
 export default {
-  create, deleteById, update, getByCodSidem, getAll
+  create, deleteById, update, getByCodSidem, getAll, getById
 }

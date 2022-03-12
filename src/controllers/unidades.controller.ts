@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 import unidadeService from '../services/unidade.service'
 import IUnidade from '../core/interfaces/IUnidade'
-import { IUnidadeQueryInput } from '../services/interfaces/unidade.query.interface.input'
+import { IUnidadeQueryInput } from '../repositories/unidade.repository'
 
 async function create (req: Request, res: Response, next: NextFunction) {
   try {

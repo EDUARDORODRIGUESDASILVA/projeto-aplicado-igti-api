@@ -1,6 +1,6 @@
 import IUnidade from '../core/interfaces/IUnidade'
 import unidadeRepository from '../repositories/unidade.repository'
-import { IUnidadeQueryInput } from './interfaces/unidade.query.interface.input'
+import { IUnidadeQueryInput } from '../repositories/interfaces/unidade.query.interface.input'
 
 async function create (unidade: IUnidade) {
   return await unidadeRepository.create(unidade)

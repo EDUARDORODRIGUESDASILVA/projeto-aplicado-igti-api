@@ -1,5 +1,4 @@
 import IUnidade from '../core/interfaces/IUnidade'
-import { IUnidadeQueryInput } from '../services/interfaces/unidade.query.interface.input'
 import Unidade from './models/Unidade'
 
 async function getById (id: number): Promise<IUnidade> {
@@ -30,6 +29,13 @@ async function deleteById (id: number): Promise<boolean> {
     where: { id }
   })
   return !!deletedUnidadeCount
+}
+
+export interface IUnidadeQueryInput {
+  vinc?: number
+  sr?: number
+  se?: number
+  nivel?: number
 }
 
 async function getByQuery (query: IUnidadeQueryInput): Promise<IUnidade[]> {

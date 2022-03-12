@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
 import objetivoService from '../services/objetivo.service'
+import { IObjetivoQueryInput, IQueryTotalizaAgregadorInput } from '../repositories/objetivo.repository'
 
 async function create (req: Request, res: Response, next: NextFunction) {
   try {
@@ -65,6 +66,7 @@ async function update (req: Request, res: Response, next: NextFunction) {
     //  next(error)
   }
 }
+
 async function getById (req: Request, res: Response, next: NextFunction) {
   try {
     const id = parseInt(req.params.id)
@@ -87,19 +89,70 @@ async function deleteById (req: Request, res: Response, next: NextFunction) {
   }
 }
 
-async function getAll (req: Request, res: Response, next: NextFunction) {
+async function getByQuery (req: Request, res: Response, next: NextFunction) {
   try {
-    const c = await objetivoService.getAll()
+    const query: IObjetivoQueryInput = {}
+
+    if (req.query.vinc as string) {
+      query.vinc = parseInt(req.query.vinc as string)
+    }
+
+    if (req.query.sr) {
+      query.sr = parseInt(req.query.sr as string)
+    }
+
+    if (req.query.nivel) {
+      query.nivel = parseInt(req.query.nivel as string)
+    }
+
+    const qobj: { produtoId?: number } = {}
+    if (query.produtoId) { qobj.produtoId = query.produtoId }
+
+    const qoprod: { codsidem?: string } = {}
+    if (query.codsidem) { qoprod.codsidem = query.codsidem }
+
+    const c = await objetivoService.getByQuery(query)
     return res.status(200).send(c)
   } catch (error) {
     next(error)
   }
 }
 
+async function totalizaAgregador (req: Request, res: Response, next: NextFunction) {
+  try {
+    const query: IQueryTotalizaAgregadorInput = {}
+    query.vinc = parseInt(req.params.id)
+
+    if (req.query.produtoId) {
+      query.produtoId = parseInt(req.query.produtoId as string)
+    }
+    const c = await objetivoService.totalizaAgregador(query)
+    return res.status(200).send(c)
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+}
+
+async function getAjustePorAgregador (req: Request, res: Response, next: NextFunction) {
+  try {
+    const unidadeId = parseInt(req.params.unidadeId)
+    const produtoId = parseInt(req.params.produtoId)
+    console.log(unidadeId, produtoId)
+    const c = await objetivoService.getAjustePorAgregador(unidadeId, produtoId)
+    return res.status(200).send(c)
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+  return []
+}
 export default {
   create,
   update,
   getById,
   deleteById,
-  getAll
+  getByQuery,
+  totalizaAgregador,
+  getAjustePorAgregador
 }
