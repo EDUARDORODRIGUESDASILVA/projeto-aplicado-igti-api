@@ -2,7 +2,6 @@ import * as dotenv from 'dotenv'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
-
 import logger from './lib/logger'
 import sync from './repositories/db.sync'
 // import { basicAuth } from './lib/auth.middleware'

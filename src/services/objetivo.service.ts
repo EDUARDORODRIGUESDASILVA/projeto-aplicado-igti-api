@@ -1,5 +1,4 @@
 import { IAjustarProduto } from '../core/interfaces/ajustar/IAjustarProduto'
-import { IRowAjustar } from '../core/interfaces/ajustar/IRowAjustar'
 import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
 import IProduto from '../core/interfaces/IProduto'
 import IUnidade from '../core/interfaces/IUnidade'
