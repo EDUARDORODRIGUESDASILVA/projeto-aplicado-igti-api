@@ -4,6 +4,7 @@ import ObjetivoPorUnidade from './models/ObjetivoPorUnidade'
 import Unidade from './models/Unidade'
 import sequelize from './db.config'
 import Usuario from './models/Usuario'
+import IUser from '../core/interfaces/IUser'
 async function create (objetivo: IObjetivoUnidade) {
   return await ObjetivoPorUnidade.create(objetivo)
 }
@@ -112,12 +113,13 @@ export interface IUpdateObjetivoLoteInput {
   metaAjustada: number
 }
 
-async function updateObjetivoLote (lote: IUpdateObjetivoLoteInput[]) {
+async function updateObjetivoLote (lote: IUpdateObjetivoLoteInput[], user: IUser) {
   lote.forEach(async (l) => {
     const metaAjustada = l.metaAjustada
     const id = l.id
+    const userId = user.matricula
     await ObjetivoPorUnidade.update(
-      { metaAjustada },
+      { metaAjustada, userId },
       { where: { id } }
     )
   })

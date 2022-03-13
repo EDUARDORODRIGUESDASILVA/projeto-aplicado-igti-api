@@ -72,7 +72,8 @@ async function getAjustePorAgregador (unidadeId: number, produtoId: number): Pro
 
 async function updateObjetivoLote (unidadeId: number, produtoId: number, lote: IUpdateObjetivoLoteInput[]) {
   // TODO validar os totais aqui
-  return await objetivoRepository.updateObjetivoLote(lote)
+  const user = await userService.getLoggedUser()
+  return await objetivoRepository.updateObjetivoLote(lote, user)
 }
 export default {
   create,
