@@ -13,5 +13,6 @@ router.get('/:id', objetivoController.getById)
 
 router.get('/agregador/:id', objetivoController.totalizaAgregador)
 router.get('/ajustar/:unidadeId/:produtoId', objetivoController.getAjustePorAgregador)
+router.post('/ajustar/:unidadeId/:produtoId', objetivoController.atualizarObjetivosLote)
 
 export default router

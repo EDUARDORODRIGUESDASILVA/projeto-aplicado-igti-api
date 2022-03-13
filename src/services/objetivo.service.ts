@@ -3,7 +3,7 @@ import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
 import IProduto from '../core/interfaces/IProduto'
 import IUnidade from '../core/interfaces/IUnidade'
 import IUser from '../core/interfaces/IUser'
-import objetivoRepository, { IObjetivoQueryInput, IQueryTotalizaAgregadorInput, ITotalizaAgregadorOutput } from '../repositories/objetivo.repository'
+import objetivoRepository, { IObjetivoQueryInput, IQueryTotalizaAgregadorInput, ITotalizaAgregadorOutput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
 import produtoService from './produto.service'
 import unidadeService from './unidade.service'
 import userService from './user.service'
@@ -69,6 +69,11 @@ async function getAjustePorAgregador (unidadeId: number, produtoId: number): Pro
 
   return ajuste
 }
+
+async function updateObjetivoLote (unidadeId: number, produtoId: number, lote: IUpdateObjetivoLoteInput[]) {
+  // TODO validar os totais aqui
+  return await objetivoRepository.updateObjetivoLote(lote)
+}
 export default {
   create,
   update,
@@ -76,6 +81,7 @@ export default {
   deleteById,
   getByQuery,
   totalizaAgregador,
-  getAjustePorAgregador
+  getAjustePorAgregador,
+  updateObjetivoLote
 
 }

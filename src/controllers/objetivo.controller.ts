@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
 import objetivoService from '../services/objetivo.service'
-import { IObjetivoQueryInput, IQueryTotalizaAgregadorInput } from '../repositories/objetivo.repository'
+import { IObjetivoQueryInput, IQueryTotalizaAgregadorInput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
 
 async function create (req: Request, res: Response, next: NextFunction) {
   try {
@@ -138,7 +138,6 @@ async function getAjustePorAgregador (req: Request, res: Response, next: NextFun
   try {
     const unidadeId = parseInt(req.params.unidadeId)
     const produtoId = parseInt(req.params.produtoId)
-    console.log(unidadeId, produtoId)
     const c = await objetivoService.getAjustePorAgregador(unidadeId, produtoId)
     return res.status(200).send(c)
   } catch (error) {
@@ -147,6 +146,19 @@ async function getAjustePorAgregador (req: Request, res: Response, next: NextFun
   }
   return []
 }
+
+async function atualizarObjetivosLote (req: Request, res: Response, next: NextFunction) {
+  try {
+    const unidadeId = parseInt(req.params.unidadeId)
+    const produtoId = parseInt(req.params.produtoId)
+    const input: IUpdateObjetivoLoteInput[] = req.body
+    const c = await objetivoService.updateObjetivoLote(unidadeId, produtoId, input)
+    return res.status(200).send(c)
+  } catch (error) {
+    console.log(error)
+    next(error)
+  }
+}
 export default {
   create,
   update,
@@ -154,5 +166,6 @@ export default {
   deleteById,
   getByQuery,
   totalizaAgregador,
-  getAjustePorAgregador
+  getAjustePorAgregador,
+  atualizarObjetivosLote
 }

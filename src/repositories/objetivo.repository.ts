@@ -78,7 +78,7 @@ export interface ITotalizaAgregadorOutput {
 async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<ITotalizaAgregadorOutput[]> {
   const queryUn: { vinc?: number } = {}
 
-  const queryProd: {produtoId?: number} = {}
+  const queryProd: { produtoId?: number } = {}
 
   if (query.vinc) {
     queryUn.vinc = query.vinc
@@ -107,6 +107,21 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
   return res
 }
 
+export interface IUpdateObjetivoLoteInput {
+  id: number,
+  metaAjustada: number
+}
+
+async function updateObjetivoLote (lote: IUpdateObjetivoLoteInput[]) {
+  lote.forEach(async (l) => {
+    const metaAjustada = l.metaAjustada
+    const id = l.id
+    await ObjetivoPorUnidade.update(
+      { metaAjustada },
+      { where: { id } }
+    )
+  })
+}
 export interface IObjetivoQueryInput {
   vinc?: number
   sr?: number
@@ -146,5 +161,5 @@ async function getByQuery (query: IObjetivoQueryInput): Promise<IObjetivoUnidade
 }
 
 export default {
-  create, deleteById, update, getById, getByQuery, getByProdutoId, totalizaAgregador
+  create, deleteById, update, getById, getByQuery, getByProdutoId, totalizaAgregador, updateObjetivoLote
 }
