@@ -21,7 +21,7 @@ app.use(cors())
 app.use(express.json())
 app.use(sync)
 
-app.get('/', (req, res) => {
+app.get('/', (req: any, res: any) => {
   res.send('IGTI Projeto Aplicado: Desenvolvedor Full Stack - Backend Node JS - Eduardo Rodrigues da Silva')
   logger.http('GET /')
 })
