@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
 import objetivoService from '../services/objetivo.service'
-import { IObjetivoQueryInput, IQueryTotalizaAgregadorInput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
+import { IObjetivoQueryInput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
 
 async function create (req: Request, res: Response, next: NextFunction) {
   try {
@@ -120,13 +120,9 @@ async function getByQuery (req: Request, res: Response, next: NextFunction) {
 
 async function totalizaAgregador (req: Request, res: Response, next: NextFunction) {
   try {
-    const query: IQueryTotalizaAgregadorInput = {}
-    query.vinc = parseInt(req.params.id)
+    const unidadeId = parseInt(req.params.id)
 
-    if (req.query.produtoId) {
-      query.produtoId = parseInt(req.query.produtoId as string)
-    }
-    const c = await objetivoService.totalizaAgregador(query)
+    const c = await objetivoService.totalizaAgregador(unidadeId)
     return res.status(200).send(c)
   } catch (error) {
     console.log(error)

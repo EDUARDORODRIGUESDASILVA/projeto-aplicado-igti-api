@@ -82,12 +82,15 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
   const queryUn: { vinc?: number, sr?: number, nivel?: number } = {}
   const queryProd: { produtoId?: number } = {}
 
+  const columns = []
   if (query.sr) {
     queryUn.sr = query.sr
+    columns.push('sr')
   }
 
   if (query.vinc) {
     queryUn.vinc = query.vinc
+    columns.push('vinc')
   }
 
   if (query.produtoId) {
@@ -105,9 +108,15 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
       ],
       where: queryProd,
       include: [
-        { model: Unidade, where: queryUn, attributes: ['vinc', 'sr'] }
+        {
+          model: Unidade,
+          where: queryUn,
+          attributes: columns
+        //  include: [{ model: Unidade, attributes: { exclude: ['sr'] } }]
+        },
+        { model: Produto }
       ],
-      group: ['produtoId', 'vinc']
+      group: ['produtoId', ...columns]
     })
 
   return res

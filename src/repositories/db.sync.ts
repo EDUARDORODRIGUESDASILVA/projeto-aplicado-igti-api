@@ -4,8 +4,6 @@ import logger from '../lib/logger'
 import db from './db.config'
 import ObjetivoPorUnidade from './models/ObjetivoPorUnidade'
 import Produto from './models/Produto'
-import Unidade from './models/Unidade'
-import Usuario from './models/Usuario'
 
 const isDev = process.env.NODE_ENV === 'development'
 

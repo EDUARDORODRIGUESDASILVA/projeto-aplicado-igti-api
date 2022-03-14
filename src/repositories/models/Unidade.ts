@@ -82,5 +82,7 @@ Unidade.init({
   sequelize: sequelizeConnection
   // paranoid: true
 })
+Unidade.belongsTo(Unidade, { foreignKey: 'vinc' })
+Unidade.belongsTo(Unidade, { foreignKey: 'se' })
 
 export default Unidade

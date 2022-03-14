@@ -35,7 +35,15 @@ async function getByQuery (query: IObjetivoQueryInput) {
   return await objetivoRepository.getByQuery(query)
 }
 
-async function totalizaAgregador (query: IQueryTotalizaAgregadorInput) {
+async function totalizaAgregador (unidadeId: number) {
+  const unidade: IUnidade = await unidadeService.getById(unidadeId)
+
+  const query: IQueryTotalizaAgregadorInput = { }
+  if (unidade.tipo === 'SR') {
+    query.sr = unidadeId
+  } else {
+    query.vinc = unidadeId
+  }
   return await objetivoRepository.totalizaAgregador(query)
 }
 
