@@ -64,6 +64,8 @@ async function getById (id: number): Promise<IObjetivoUnidade> {
 
 export interface IQueryTotalizaAgregadorInput {
   vinc?: number,
+  sr?: number,
+  nivel?: number,
   produtoId?: number
 }
 export interface ITotalizaAgregadorOutput {
@@ -77,9 +79,12 @@ export interface ITotalizaAgregadorOutput {
 }
 
 async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<ITotalizaAgregadorOutput[]> {
-  const queryUn: { vinc?: number } = {}
-
+  const queryUn: { vinc?: number, sr?: number, nivel?: number } = {}
   const queryProd: { produtoId?: number } = {}
+
+  if (query.sr) {
+    queryUn.sr = query.sr
+  }
 
   if (query.vinc) {
     queryUn.vinc = query.vinc
@@ -100,7 +105,7 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
       ],
       where: queryProd,
       include: [
-        { model: Unidade, where: queryUn, attributes: ['vinc'] }
+        { model: Unidade, where: queryUn, attributes: ['vinc', 'sr'] }
       ],
       group: ['produtoId', 'vinc']
     })

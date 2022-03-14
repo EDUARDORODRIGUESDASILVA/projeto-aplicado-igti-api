@@ -43,12 +43,17 @@ async function getAjustePorAgregador (unidadeId: number, produtoId: number): Pro
   const unidade: IUnidade = await unidadeService.getById(unidadeId)
   const produto: IProduto = await produtoService.getById(produtoId)
 
-  const query: IQueryTotalizaAgregadorInput = { produtoId, vinc: unidadeId }
+  const query: IQueryTotalizaAgregadorInput = { produtoId }
+  if (unidade.tipo === 'SR') {
+    query.sr = unidadeId
+  } else {
+    query.vinc = unidadeId
+  }
 
   const total: ITotalizaAgregadorOutput[] = await objetivoRepository.totalizaAgregador(query)
   const t = total[0]
 
-  const rows: IObjetivoUnidade[] = await getByQuery({ produtoId: produtoId, vinc: unidadeId })
+  const rows: IObjetivoUnidade[] = await getByQuery(query)
   const userId: IUser = await userService.getLoggedUser()
   const ajuste: IAjustarProduto = {
     id: 0,
