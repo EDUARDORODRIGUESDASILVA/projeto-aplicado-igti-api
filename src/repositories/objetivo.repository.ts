@@ -1,4 +1,4 @@
-import Produto, { ProdutoInput } from './models/Produto'
+import Produto from './models/Produto'
 import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
 import ObjetivoPorUnidade from './models/ObjetivoPorUnidade'
 import Unidade from './models/Unidade'
@@ -16,7 +16,7 @@ async function deleteById (objetivoId: number): Promise<boolean> {
   return !!deletedCount
 }
 
-async function update (id: number, payload: Partial<ProdutoInput>): Promise<IObjetivoUnidade> {
+async function update (id: number, payload: Partial<IObjetivoUnidade>): Promise<IObjetivoUnidade> {
   const objetivo = await ObjetivoPorUnidade.findByPk(id)
   if (!objetivo) {
     // @todo throw custom error
@@ -67,6 +67,7 @@ export interface IQueryTotalizaAgregadorInput {
   sr?: number,
   nivel?: number,
   produtoId?: number
+  agregador?: number
 }
 export interface ITotalizaAgregadorOutput {
   metaAjustada: number,
@@ -83,6 +84,11 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
   const queryProd: { produtoId?: number } = {}
 
   const columns = []
+
+  if (query.agregador) {
+    queryUn.sr = query.agregador
+    columns.push('vinc')
+  }
   if (query.sr) {
     queryUn.sr = query.sr
     columns.push('sr')
@@ -104,7 +110,11 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
         [sequelize.fn('sum', sequelize.col('metaReferencia2')), 'metaReferencia2'],
         [sequelize.fn('sum', sequelize.col('metaReferencia')), 'metaReferencia'],
         [sequelize.fn('sum', sequelize.col('trocas')), 'trocas'],
+        [sequelize.fn('sum', sequelize.col('erros')), 'erros'],
+        [sequelize.fn('sum', sequelize.col('gravado')), 'gravado'],
+        [sequelize.fn('count', sequelize.col('trava')), 'qtdlinhas'],
         'produtoId'
+
       ],
       where: queryProd,
       include: [
@@ -112,9 +122,9 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
           model: Unidade,
           where: queryUn,
           attributes: columns
-        //  include: [{ model: Unidade, attributes: { exclude: ['sr'] } }]
-        },
-        { model: Produto }
+          //   //  include: [{ model: Unidade, attributes: { exclude: ['sr'] } }]
+        }
+      //   { model: Produto }
       ],
       group: ['produtoId', ...columns]
     })
@@ -133,7 +143,7 @@ async function updateObjetivoLote (lote: IUpdateObjetivoLoteInput[], user: IUser
     const id = l.id
     const userId = user.matricula
     await ObjetivoPorUnidade.update(
-      { metaAjustada, userId },
+      { metaAjustada, userId, gravado: 1 },
       { where: { id } }
     )
   })

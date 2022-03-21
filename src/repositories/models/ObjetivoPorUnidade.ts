@@ -26,6 +26,8 @@ class ObjetivoPorUnidade extends Model<ObjetivoPorUnidadeAttributes, ObjetivoPor
   trava!: string;
   erros!: number;
   userId!: string;
+  gravado!: number
+  ativo!: number
   // timestamps!
   icOrdem?: number | undefined;
 
@@ -77,6 +79,15 @@ ObjetivoPorUnidade.init({
     allowNull: false
   },
   erros: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+
+  gravado: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  ativo: {
     type: DataTypes.INTEGER,
     allowNull: false
   },

@@ -9,5 +9,7 @@ export interface IObjetivoUnidade {
   trocas: number
   trava: string
   erros: number
+  gravado: number
+  ativo: number
   userId: string
 }
