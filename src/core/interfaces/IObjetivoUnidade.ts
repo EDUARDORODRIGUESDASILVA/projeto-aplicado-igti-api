@@ -10,6 +10,7 @@ export interface IObjetivoUnidade {
   trava: string
   erros: number
   gravado: number
+  qtdlinhas?: number
   ativo: number
   userId: string
 }

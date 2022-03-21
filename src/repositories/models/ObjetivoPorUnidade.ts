@@ -28,6 +28,7 @@ class ObjetivoPorUnidade extends Model<ObjetivoPorUnidadeAttributes, ObjetivoPor
   userId!: string;
   gravado!: number
   ativo!: number
+  qtdlinhas!: number
   // timestamps!
   icOrdem?: number | undefined;
 

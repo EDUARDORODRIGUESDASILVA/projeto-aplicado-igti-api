@@ -74,6 +74,9 @@ export interface ITotalizaAgregadorOutput {
   metaReferencia2: number,
   trocas: number,
   produtoId: number,
+  erros: number,
+  qtdlinhas: number,
+  gravado: number,
   Unidade?: {
     vinc: number
   }

@@ -75,7 +75,10 @@ async function getAjustePorAgregador (unidadeId: number, produtoId: number): Pro
     trocas: 0,
     metaAjustada: t.metaAjustada,
     trava: 'Livre',
-    erros: 0,
+    erros: t.erros,
+    gravado: t.gravado,
+    qtdlinhas: t.qtdlinhas,
+    ativo: 1,
     rows,
     userId: userId.matricula
   }
