@@ -138,15 +138,24 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
 export interface IUpdateObjetivoLoteInput {
   id: number,
   metaAjustada: number
+  metaReferencia2?: number
 }
 
 async function updateObjetivoLote (lote: IUpdateObjetivoLoteInput[], user: IUser) {
   lote.forEach(async (l) => {
     const metaAjustada = l.metaAjustada
+    const metaReferencia2 = l.metaReferencia2
     const id = l.id
     const userId = user.matricula
+
+    const atualizacao: any = { metaAjustada, userId, gravado: 1 }
+    // todo deixar esse controle dinamico quando tiver tabela de permissoes
+    if (metaReferencia2 && user.unidadeId === 2625) {
+      atualizacao.metaReferencia2 = metaReferencia2
+      atualizacao.gravado = 0
+    }
     await ObjetivoPorUnidade.update(
-      { metaAjustada, userId, gravado: 1 },
+      atualizacao,
       { where: { id } }
     )
   })
