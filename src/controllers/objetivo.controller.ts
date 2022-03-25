@@ -105,11 +105,11 @@ async function getByQuery (req: Request, res: Response, next: NextFunction) {
       query.nivel = parseInt(req.query.nivel as string)
     }
 
-    const qobj: { produtoId?: number } = {}
-    if (query.produtoId) { qobj.produtoId = query.produtoId }
+    if (req.query.produtoId) {
+      query.produtoId = parseInt(req.query.produtoId as string)
+    }
 
-    const qoprod: { codsidem?: string } = {}
-    if (query.codsidem) { qoprod.codsidem = query.codsidem }
+    logger.error(query)
 
     const c = await objetivoService.getByQuery(query)
     return res.status(200).send(c)
