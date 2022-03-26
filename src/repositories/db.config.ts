@@ -23,10 +23,21 @@ function createConnection (): Sequelize {
       logging: (msg) => logger.debug(msg)
     })
   }
+  if (dbDriver === 'postgres') {
+    const connstring = process.env.DB_CONNECTION_STRING as string
+    return new Sequelize(connstring,
+      {
+        dialect: dbDriver,
+        define: {
+          timestamps: false
+        },
+        logging: (msg) => logger.debug(msg)
+      })
+  }
 
   return new Sequelize({
     dialect: 'sqlite',
-    storage: './database.sqlite'
+    storage: process.env.SQL_LITE_STORAGE
   })
 }
 

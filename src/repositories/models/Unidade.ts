@@ -60,11 +60,11 @@ Unidade.init({
 
   vinc: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
   se: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: true
   },
 
   sr: {
@@ -82,7 +82,7 @@ Unidade.init({
   sequelize: sequelizeConnection
   // paranoid: true
 })
-Unidade.belongsTo(Unidade, { foreignKey: 'vinc' })
-Unidade.belongsTo(Unidade, { foreignKey: 'se' })
+Unidade.hasOne(Unidade, { foreignKey: 'vinc' })
+// Unidade.hasOne(Unidade, { as: 'SEV', foreignKey: 'se' })
 
 export default Unidade

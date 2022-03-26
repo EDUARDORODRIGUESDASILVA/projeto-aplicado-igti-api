@@ -77,16 +77,16 @@ export interface ITotalizaAgregadorOutput {
   erros: number,
   qtdlinhas: number,
   gravado: number,
-  Unidade?: {
-    vinc: number
-  }
+  'Unidade.sr'?: number,
+  'Unidade.vinc'?: number,
+
 }
 
 async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<ITotalizaAgregadorOutput[]> {
   const queryUn: { vinc?: number, sr?: number, nivel?: number } = {}
   const queryProd: { produtoId?: number } = {}
 
-  const columns = []
+  const columns: string[] = []
 
   if (query.agregador) {
     queryUn.sr = query.agregador
@@ -119,15 +119,16 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
         'produtoId'
 
       ],
+      raw: true,
       where: queryProd,
       include: [
         {
           model: Unidade,
           where: queryUn,
-          attributes: columns
+          attributes: [...columns]
           //   //  include: [{ model: Unidade, attributes: { exclude: ['sr'] } }]
         }
-      //   { model: Produto }
+        // { model: Produto }
       ],
       group: ['produtoId', ...columns]
     })
@@ -186,7 +187,11 @@ async function getByQuery (query: IObjetivoQueryInput): Promise<IObjetivoUnidade
     include: [
       {
         model: Unidade,
-        where: fun
+        where: fun,
+        include: [{
+          model: Unidade
+        }
+        ]
       },
       {
         model: Produto

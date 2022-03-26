@@ -108,9 +108,6 @@ async function getByQuery (req: Request, res: Response, next: NextFunction) {
     if (req.query.produtoId) {
       query.produtoId = parseInt(req.query.produtoId as string)
     }
-
-    logger.error(query)
-
     const c = await objetivoService.getByQuery(query)
     return res.status(200).send(c)
   } catch (error) {
