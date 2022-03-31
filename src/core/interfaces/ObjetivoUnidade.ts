@@ -1,3 +1,11 @@
+/* eslint-disable no-unused-vars */
+export enum SituacaoAivo {
+  Fechado = 0,
+  Ativo = 1,
+  ApenasSR = 2,
+  ApenasSEV = 3
+}
+
 export interface IObjetivoUnidade {
   id: number,
   produtoId: number
@@ -11,6 +19,6 @@ export interface IObjetivoUnidade {
   erros: number
   gravado: number
   qtdlinhas?: number
-  ativo: number
+  ativo: SituacaoAivo
   userId: string
 }

@@ -93,7 +93,6 @@ async function getByQueryParams (req: Request, res: Response, next: NextFunction
       query.nivel = parseInt(req.query.nivel as string)
     }
 
-    console.log('query params', req.query, query)
     const unidades = await unidadeService.getByQuery(query)
     return res.status(200).send(unidades)
   } catch (error) {

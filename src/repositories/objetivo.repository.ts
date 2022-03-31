@@ -1,12 +1,15 @@
 import Produto from './models/Produto'
-import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
+import { IObjetivoUnidade } from '../core/interfaces/ObjetivoUnidade'
 import ObjetivoPorUnidade from './models/ObjetivoPorUnidade'
 import Unidade from './models/Unidade'
 import sequelize from './db.config'
 import Usuario from './models/Usuario'
 import IUser from '../core/interfaces/IUser'
 async function create (objetivo: IObjetivoUnidade) {
-  return await ObjetivoPorUnidade.create(objetivo)
+  const created = await ObjetivoPorUnidade.create(objetivo)
+  created.verificaErros()
+  await created.save()
+  return created
 }
 
 async function deleteById (objetivoId: number): Promise<boolean> {
@@ -22,7 +25,9 @@ async function update (id: number, payload: Partial<IObjetivoUnidade>): Promise<
     // @todo throw custom error
     throw new Error('not found')
   }
-  const updatedObjetivo = await (objetivo as ObjetivoPorUnidade).update(payload)
+  const updatedObjetivo = await (await (objetivo as ObjetivoPorUnidade).update(payload))
+  updatedObjetivo.verificaErros()
+  updatedObjetivo.save()
   return updatedObjetivo
 }
 
@@ -74,20 +79,20 @@ export interface ITotalizaAgregadorOutput {
   metaReferencia2: number,
   trocas: number,
   produtoId: number,
-  erros: number,
-  qtdlinhas: number,
-  gravado: number,
+  erros: number | string,
+  qtdlinhas: number | string,
+  gravado: number | string,
   'Unidade.sr'?: number,
-  'Unidade.vinc'?: number,
-
+  'Unidade.vinc'?: number
 }
 
 async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<ITotalizaAgregadorOutput[]> {
   const queryUn: { vinc?: number, sr?: number, nivel?: number } = {}
   const queryProd: { produtoId?: number } = {}
-
   const columns: string[] = []
-
+  if (query.produtoId) {
+    queryProd.produtoId = query.produtoId
+  }
   if (query.agregador) {
     queryUn.sr = query.agregador
     columns.push('vinc')
@@ -101,11 +106,6 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
     queryUn.vinc = query.vinc
     columns.push('vinc')
   }
-
-  if (query.produtoId) {
-    queryProd.produtoId = query.produtoId
-  }
-
   const res: ITotalizaAgregadorOutput[] = await ObjetivoPorUnidade.findAll(
     {
       attributes: [
@@ -117,7 +117,6 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
         [sequelize.fn('sum', sequelize.col('gravado')), 'gravado'],
         [sequelize.fn('count', sequelize.col('trava')), 'qtdlinhas'],
         'produtoId'
-
       ],
       raw: true,
       where: queryProd,
@@ -126,13 +125,10 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
           model: Unidade,
           where: queryUn,
           attributes: [...columns]
-          //   //  include: [{ model: Unidade, attributes: { exclude: ['sr'] } }]
         }
-        // { model: Produto }
       ],
       group: ['produtoId', ...columns]
     })
-
   return res
 }
 
@@ -151,14 +147,16 @@ async function updateObjetivoLote (lote: IUpdateObjetivoLoteInput[], user: IUser
 
     const atualizacao: any = { metaAjustada, userId, gravado: 1 }
     // todo deixar esse controle dinamico quando tiver tabela de permissoes
-    if (metaReferencia2 && user.unidadeId === 2625) {
+    if (typeof (metaReferencia2) === 'number' && user.unidadeId === 2625) {
       atualizacao.metaReferencia2 = metaReferencia2
       atualizacao.gravado = 0
     }
-    await ObjetivoPorUnidade.update(
-      atualizacao,
-      { where: { id } }
-    )
+    const objetivo = await ObjetivoPorUnidade.findByPk(id)
+    if (objetivo) {
+      objetivo.update(atualizacao)
+      objetivo.verificaErros()
+      objetivo.save()
+    }
   })
 }
 export interface IObjetivoQueryInput {

@@ -1,5 +1,5 @@
 import { IAjustarProduto } from '../core/interfaces/ajustar/IAjustarProduto'
-import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
+import { IObjetivoUnidade } from '../core/interfaces/ObjetivoUnidade'
 import IProduto from '../core/interfaces/IProduto'
 import IUnidade from '../core/interfaces/IUnidade'
 import IUser from '../core/interfaces/IUser'
@@ -75,9 +75,9 @@ async function getAjustePorAgregador (unidadeId: number, produtoId: number): Pro
     trocas: 0,
     metaAjustada: t.metaAjustada,
     trava: 'Livre',
-    erros: t.erros,
-    gravado: t.gravado,
-    qtdlinhas: t.qtdlinhas,
+    erros: parseInt(t.erros.toString()),
+    gravado: parseInt(t.gravado.toString()),
+    qtdlinhas: parseInt(t.qtdlinhas.toString()),
     ativo: 1,
     rows,
     userId: userId.matricula
@@ -89,8 +89,10 @@ async function getAjustePorAgregador (unidadeId: number, produtoId: number): Pro
 async function updateObjetivoLote (unidadeId: number, produtoId: number, lote: IUpdateObjetivoLoteInput[]) {
   // TODO validar os totais aqui
   const user = await userService.getLoggedUser()
-  return await objetivoRepository.updateObjetivoLote(lote, user)
+  await objetivoRepository.updateObjetivoLote(lote, user)
+  return user
 }
+
 export default {
   create,
   update,
@@ -100,5 +102,4 @@ export default {
   totalizaAgregador,
   getAjustePorAgregador,
   updateObjetivoLote
-
 }

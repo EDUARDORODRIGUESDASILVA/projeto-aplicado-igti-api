@@ -2,7 +2,7 @@
 import { check, validationResult } from 'express-validator'
 import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
-import { IObjetivoUnidade } from '../core/interfaces/IObjetivoUnidade'
+import { IObjetivoUnidade } from '../core/interfaces/ObjetivoUnidade'
 import objetivoService from '../services/objetivo.service'
 import { IObjetivoQueryInput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
 

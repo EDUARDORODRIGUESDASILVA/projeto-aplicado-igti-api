@@ -1,4 +1,4 @@
-import { IObjetivoUnidade } from '../IObjetivoUnidade'
+import { IObjetivoUnidade } from '../ObjetivoUnidade'
 import IProduto from '../IProduto'
 import IUnidade from '../IUnidade'
 
