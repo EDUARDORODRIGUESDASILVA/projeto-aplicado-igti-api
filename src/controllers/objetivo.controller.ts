@@ -73,6 +73,20 @@ async function getById (req: Request, res: Response, next: NextFunction) {
     const c = await objetivoService.getById(id)
     return res.status(200).send(c)
   } catch (error) {
+    logger.error('[USER] Falha ao consultar o objetivo', error)
+    next(error)
+  }
+}
+
+async function findObjetivo (req: Request, res: Response, next: NextFunction) {
+  try {
+    const unidadeId = parseInt(req.params.unidadeId)
+    const produtoId = parseInt(req.params.produtoId)
+    // return res.status(200).send({ unidadeId, produtoId })
+    const c = await objetivoService.findObjetivo(unidadeId, produtoId)
+    return res.status(200).send(c)
+  } catch (error) {
+    logger.error('[USER] Falha ao consultar o objetivo', error)
     next(error)
   }
 }
@@ -126,12 +140,23 @@ async function totalizaAgregador (req: Request, res: Response, next: NextFunctio
     next(error)
   }
 }
+async function criarObjetivosPorAgregador (req: Request, res: Response, next: NextFunction) {
+  try {
+    const id = parseInt(req.params.id)
+    const c = await objetivoService.criarObjetivosPorAgregador(id)
+    return res.status(200).send(c)
+  } catch (error) {
+    logger.error('[USER] Falha ao consultar o objetivo', error)
+    next(error)
+  }
+}
 
 async function getAjustePorAgregador (req: Request, res: Response, next: NextFunction) {
   try {
+    const tipo: 'AG' | 'SE' = req.params.tipo === 'SE' ? 'SE' : 'AG'
     const unidadeId = parseInt(req.params.unidadeId)
     const produtoId = parseInt(req.params.produtoId)
-    const c = await objetivoService.getAjustePorAgregador(unidadeId, produtoId)
+    const c = await objetivoService.getAjustePorAgregador(tipo, unidadeId, produtoId)
     return res.status(200).send(c)
   } catch (error) {
     console.log(error)
@@ -156,9 +181,11 @@ export default {
   create,
   update,
   getById,
+  findObjetivo,
   deleteById,
   getByQuery,
   totalizaAgregador,
   getAjustePorAgregador,
-  atualizarObjetivosLote
+  atualizarObjetivosLote,
+  criarObjetivosPorAgregador
 }

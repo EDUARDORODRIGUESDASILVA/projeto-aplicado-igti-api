@@ -11,9 +11,11 @@ router.delete('/:id', objetivoController.deleteById)
 
 router.get('/', objetivoController.getByQuery)
 router.get('/:id', objetivoController.getById)
+router.get('/find/:unidadeId/:produtoId', objetivoController.findObjetivo)
 
 router.get('/agregador/:id', objetivoController.totalizaAgregador)
-router.get('/ajustar/:unidadeId/:produtoId', objetivoController.getAjustePorAgregador)
+router.post('/agregador/:id', objetivoController.criarObjetivosPorAgregador)
+router.get('/ajustar/:tipo/:unidadeId/:produtoId', objetivoController.getAjustePorAgregador)
 router.post('/ajustar/:unidadeId/:produtoId', objetivoController.atualizarObjetivosLote)
 
 router.get('/relatorio/:unidadeId', relatorioController.getRelatorio)

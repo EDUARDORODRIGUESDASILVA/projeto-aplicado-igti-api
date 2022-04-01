@@ -5,6 +5,7 @@ import Unidade from './models/Unidade'
 import sequelize from './db.config'
 import Usuario from './models/Usuario'
 import IUser from '../core/interfaces/IUser'
+
 async function create (objetivo: IObjetivoUnidade) {
   const created = await ObjetivoPorUnidade.create(objetivo)
   created.verificaErros()
@@ -67,6 +68,17 @@ async function getById (id: number): Promise<IObjetivoUnidade> {
   return objetivo
 }
 
+async function findObjetivo (unidadeId: number, produtoId: number): Promise<ObjetivoPorUnidade | null> {
+  const objetivo = await ObjetivoPorUnidade.findOne({
+    where: {
+      produtoId,
+      unidadeId
+    }
+  }
+  )
+  return objetivo
+}
+
 export interface IQueryTotalizaAgregadorInput {
   vinc?: number,
   sr?: number,
@@ -77,6 +89,7 @@ export interface IQueryTotalizaAgregadorInput {
 export interface ITotalizaAgregadorOutput {
   metaAjustada: number,
   metaReferencia2: number,
+  metaReferencia: number,
   trocas: number,
   produtoId: number,
   erros: number | string,
@@ -185,11 +198,7 @@ async function getByQuery (query: IObjetivoQueryInput): Promise<IObjetivoUnidade
     include: [
       {
         model: Unidade,
-        where: fun,
-        include: [{
-          model: Unidade
-        }
-        ]
+        where: fun
       },
       {
         model: Produto
@@ -202,5 +211,5 @@ async function getByQuery (query: IObjetivoQueryInput): Promise<IObjetivoUnidade
 }
 
 export default {
-  create, deleteById, update, getById, getByQuery, getByProdutoId, totalizaAgregador, updateObjetivoLote
+  create, deleteById, update, getById, findObjetivo, getByQuery, getByProdutoId, totalizaAgregador, updateObjetivoLote
 }

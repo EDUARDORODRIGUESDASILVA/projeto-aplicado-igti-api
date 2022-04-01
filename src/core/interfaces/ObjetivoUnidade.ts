@@ -7,7 +7,7 @@ export enum SituacaoAivo {
 }
 
 export interface IObjetivoUnidade {
-  id: number,
+  id?: number,
   produtoId: number
   unidadeId: number
   metaReferencia: number
