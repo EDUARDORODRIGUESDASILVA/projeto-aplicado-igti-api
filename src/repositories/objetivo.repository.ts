@@ -119,6 +119,10 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
     queryUn.vinc = query.vinc
     columns.push('vinc')
   }
+
+  if (query.nivel) {
+    queryUn.nivel = query.nivel
+  }
   const res: ITotalizaAgregadorOutput[] = await ObjetivoPorUnidade.findAll(
     {
       attributes: [

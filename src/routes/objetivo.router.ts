@@ -13,11 +13,13 @@ router.get('/', objetivoController.getByQuery)
 router.get('/:id', objetivoController.getById)
 router.get('/find/:unidadeId/:produtoId', objetivoController.findObjetivo)
 
-router.get('/agregador/:id', objetivoController.totalizaAgregador)
+router.get('/agregador/:tipo/:unidadeId', objetivoController.totalizaAgregador)
+router.get('/agregador/:tipo/:unidadeId/:produtoId', objetivoController.totalizaAgregador)
 router.post('/agregador/:id', objetivoController.criarObjetivosPorAgregador)
 router.get('/ajustar/:tipo/:unidadeId/:produtoId', objetivoController.getAjustePorAgregador)
 router.post('/ajustar/:unidadeId/:produtoId', objetivoController.atualizarObjetivosLote)
 
 router.get('/relatorio/:unidadeId', relatorioController.getRelatorio)
+router.get('/relatorio/:unidadeId/:produtoId', relatorioController.getRelatorio)
 
 export default router

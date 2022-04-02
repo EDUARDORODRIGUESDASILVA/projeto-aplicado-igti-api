@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 import { IObjetivoUnidade } from '../core/interfaces/ObjetivoUnidade'
 import objetivoService from '../services/objetivo.service'
-import { IObjetivoQueryInput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
+import { IObjetivoQueryInput, ITotalizaAgregadorOutput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
 
 async function create (req: Request, res: Response, next: NextFunction) {
   try {
@@ -131,9 +131,17 @@ async function getByQuery (req: Request, res: Response, next: NextFunction) {
 
 async function totalizaAgregador (req: Request, res: Response, next: NextFunction) {
   try {
-    const unidadeId = parseInt(req.params.id)
+    const tipo: 'AG' | 'SE' = req.params.tipo === 'SE' ? 'SE' : 'AG'
+    const unidadeId = parseInt(req.params.unidadeId)
+    let produtoId: number
 
-    const c = await objetivoService.totalizaAgregador(unidadeId)
+    let c: ITotalizaAgregadorOutput[]
+    if (req.params.produtoId) {
+      produtoId = parseInt(req.params.produtoId)
+      c = await objetivoService.totalizaAgregador(tipo, unidadeId, produtoId)
+    } else {
+      c = await objetivoService.totalizaAgregador(tipo, unidadeId)
+    }
     return res.status(200).send(c)
   } catch (error) {
     console.log(error)

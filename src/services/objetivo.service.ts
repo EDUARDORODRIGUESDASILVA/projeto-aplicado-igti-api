@@ -44,14 +44,19 @@ async function getByQuery (query: IObjetivoQueryInput) {
   return await objetivoRepository.getByQuery(query)
 }
 
-async function totalizaAgregador (unidadeId: number) {
+async function totalizaAgregador (tipo: 'AG' | 'SE', unidadeId: number, produtoId?:number) {
   const unidade: IUnidade = await unidadeService.getById(unidadeId)
 
   const query: IQueryTotalizaAgregadorInput = { }
-  if (unidade.tipo === 'SR') {
+  if (unidade.tipo === 'SR' && tipo === 'AG') {
     query.sr = unidadeId
+    query.nivel = 4
   } else {
     query.vinc = unidadeId
+  }
+
+  if (produtoId) {
+    query.produtoId = produtoId
   }
   return await objetivoRepository.totalizaAgregador(query)
 }
@@ -63,8 +68,13 @@ async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number, prod
   const query: IQueryTotalizaAgregadorInput = { produtoId }
   if (unidade.tipo === 'SR' && tipo === 'AG') {
     query.sr = unidadeId
+    query.nivel = 4
   } else {
     query.vinc = unidadeId
+  }
+
+  if (unidade.tipo === 'SR' && tipo === 'SE') {
+    query.nivel = 3
   }
 
   const total: ITotalizaAgregadorOutput[] = await objetivoRepository.totalizaAgregador(query)
@@ -72,10 +82,6 @@ async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number, prod
 
   if (unidade.tipo === 'SR' && tipo === 'SE') {
     query.nivel = 3
-  }
-  if (unidade.tipo === 'SR' && tipo === 'AG') {
-    query.nivel = 4
-    console.log(query)
   }
 
   const rows: IObjetivoUnidade[] = await getByQuery(query)
@@ -171,7 +177,7 @@ async function criarObjetivosPorAgregador (unidadeId: number): Promise<IObjetivo
 
 async function criarObjetivosPorSE (unidadeId: number, user: IUser): Promise<IObjetivoUnidade[]> {
   const novosObjetivos: IObjetivoUnidade[] = []
-  const objetivos: ITotalizaAgregadorOutput[] = await totalizaAgregador(unidadeId)
+  const objetivos: ITotalizaAgregadorOutput[] = await totalizaAgregador('AG', unidadeId)
   objetivos.forEach(async (r) => {
     const o = await createOrUpdateObjetivoAgregador(unidadeId, r, user)
     if (o) {
