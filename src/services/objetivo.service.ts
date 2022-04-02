@@ -3,7 +3,11 @@ import { IObjetivoUnidade } from '../core/interfaces/ObjetivoUnidade'
 import IProduto from '../core/interfaces/IProduto'
 import IUnidade from '../core/interfaces/IUnidade'
 import IUser from '../core/interfaces/IUser'
-import objetivoRepository, { IObjetivoQueryInput, IQueryTotalizaAgregadorInput, ITotalizaAgregadorOutput, IUpdateObjetivoLoteInput } from '../repositories/objetivo.repository'
+import objetivoRepository, {
+  IObjetivoQueryInput, IQueryFindObjetivos,
+  IQueryTotalizaAgregadorInput, ITotalizaAgregadorOutput,
+  IUpdateObjetivoLoteInput
+} from '../repositories/objetivo.repository'
 import produtoService from './produto.service'
 import unidadeService from './unidade.service'
 import userService from './user.service'
@@ -25,7 +29,6 @@ async function update (objetivo: IObjetivoUnidade) {
     objetivo.userId = user.matricula
     return await objetivoRepository.update(id, objetivo)
   }
-
   throw new Error('Id indefinido')
 }
 
@@ -35,6 +38,22 @@ async function getById (id: number) {
 
 async function findObjetivo (unidadeId: number, produtoId: number) {
   return await objetivoRepository.findObjetivo(unidadeId, produtoId)
+}
+
+async function findObjetivos (tipo: 'AG' | 'SE', unidadeId: number, produtoId: number) {
+  const unidade = await unidadeService.getById(unidadeId)
+  const query: IQueryFindObjetivos = {}
+  if (produtoId) {
+    query.produtoId = produtoId
+  }
+
+  if (unidade.tipo === 'SR') {
+    query.sr = unidadeId
+    query.nivel = tipo === 'SE' ? 3 : 4
+  }
+
+  const objetivos = await objetivoRepository.findObjetivos(query)
+  return objetivos
 }
 async function deleteById (id: number) {
   return await objetivoRepository.deleteById(id)
@@ -61,7 +80,8 @@ async function totalizaAgregador (tipo: 'AG' | 'SE', unidadeId: number, produtoI
   return await objetivoRepository.totalizaAgregador(query)
 }
 
-async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number, produtoId: number): Promise<IAjustarProduto> {
+async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number,
+  produtoId: number): Promise<IAjustarProduto> {
   const unidade: IUnidade = await unidadeService.getById(unidadeId)
   const produto: IProduto = await produtoService.getById(produtoId)
 
@@ -93,7 +113,7 @@ async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number, prod
     unidade,
     produto,
     metaMinima: 0,
-    metaReferencia: t.metaReferencia2,
+    metaReferencia: t.metaReferencia,
     metaReferencia2: t.metaReferencia2,
     trocas: 0,
     metaAjustada: t.metaAjustada,
@@ -109,7 +129,8 @@ async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number, prod
   return ajuste
 }
 
-async function createOrUpdateObjetivoAgregador (unidadeId: number, row: ITotalizaAgregadorOutput, user: IUser): Promise<ObjetivoPorUnidade> {
+async function createOrUpdateObjetivoAgregador (unidadeId: number,
+  row: ITotalizaAgregadorOutput, user: IUser): Promise<ObjetivoPorUnidade> {
   const produtoId = row.produtoId
   const objetivo: ObjetivoPorUnidade | null = await findObjetivo(unidadeId, produtoId)
   if (objetivo) {
@@ -130,7 +151,7 @@ async function createOrUpdateObjetivoAgregador (unidadeId: number, row: ITotaliz
       const newObjetivo: IObjetivoUnidade = {
         produtoId,
         unidadeId,
-        metaReferencia: row.metaReferencia2,
+        metaReferencia: row.metaReferencia,
         metaReferencia2: row.metaReferencia2,
         metaAjustada: row.metaAjustada,
         metaMinima: 0,
@@ -188,11 +209,91 @@ async function criarObjetivosPorSE (unidadeId: number, user: IUser): Promise<IOb
   return novosObjetivos
 }
 
-async function updateObjetivoLote (unidadeId: number, produtoId: number, lote: IUpdateObjetivoLoteInput[]) {
+async function updateObjetivoLote (tipo: 'AG' | 'SE', unidadeId: number,
+  produtoId: number, lote: IUpdateObjetivoLoteInput[]) {
   // TODO validar os totais aqui
+  const unidade = await unidadeService.getById(unidadeId)
   const user = await userService.getLoggedUser()
+
+  const atualizaReferencia = lote.map(l => !!l.metaReferencia2).reduce((p, c) => p || c, false)
   await objetivoRepository.updateObjetivoLote(lote, user)
+
+  if (tipo === 'SE' && unidade.tipo === 'SR') {
+    recalculaAgencias(unidade, produtoId, user)
+  }
+
+  if (tipo === 'AG' && unidade.tipo === 'SR') {
+    recalculaSE(unidade, produtoId, user, atualizaReferencia)
+  }
   return user
+}
+
+async function recalculaAgencias (unidade: IUnidade, produtoId: number, user: IUser) {
+  const objetivosSEV = await findObjetivos('SE', unidade.id, produtoId)
+  const objetivosAG = await findObjetivos('AG', unidade.id, produtoId)
+
+  objetivosSEV.forEach(obje => {
+    const novaMeta = obje.metaReferencia
+    const totalMetaAjustada =
+            objetivosAG
+              .filter(obja => obja.Unidade?.se === obje.unidadeId)
+              .map(obja => obja.metaAjustada)
+              .reduce((p, c) => p + c, 0)
+
+    objetivosAG
+      .filter(obja => obja.Unidade?.se === obje.unidadeId)
+      .forEach(obja => {
+        obja.metaAjustada = novaMeta * (obja.metaAjustada / totalMetaAjustada)
+        obja.metaReferencia2 = novaMeta * (obja.metaAjustada / totalMetaAjustada)
+        obja.gravado = 0
+        obja.userId = user.matricula
+        obja.verificaErros()
+        obja.save()
+      })
+  })
+}
+
+async function recalculaSE (unidade: IUnidade, produtoId: number, user: IUser, atualizaReferencia: boolean) {
+  const objetivosSEV = await findObjetivos('SE', unidade.id, produtoId)
+  const objetivosAG = await findObjetivos('AG', unidade.id, produtoId)
+
+  const totalMetaReferencia =
+    objetivosAG
+      .map(obja => obja.metaReferencia)
+      .reduce((p, c) => p + c, 0)
+
+  const totalMetaReferencia2 =
+    objetivosAG
+      .map(obja => obja.metaReferencia)
+      .reduce((p, c) => p + c, 0)
+
+  const totalAjustada =
+    objetivosAG
+      .map(obja => obja.metaAjustada)
+      .reduce((p, c) => p + c, 0)
+
+  objetivosSEV.forEach(obje => {
+    const totalMetaAjustadaSEV =
+        objetivosAG
+          .filter(obja => obja.Unidade?.se === obje.unidadeId)
+          .map(obja => obja.metaAjustada)
+          .reduce((p, c) => p + c, 0)
+    const totalMetaReferencia2SEV =
+      objetivosAG
+        .filter(obja => obja.Unidade?.se === obje.unidadeId)
+        .map(obja => obja.metaReferencia2)
+        .reduce((p, c) => p + c, 0)
+
+    obje.metaAjustada = totalMetaReferencia * (totalMetaAjustadaSEV / totalMetaReferencia2)
+    if (atualizaReferencia) {
+      obje.metaReferencia2 = totalMetaReferencia * (totalMetaReferencia2SEV / totalAjustada)
+    }
+
+    obje.gravado = 1
+    obje.userId = user.matricula
+    obje.verificaErros()
+    obje.save()
+  })
 }
 
 export default {
@@ -201,6 +302,7 @@ export default {
   getById,
   deleteById,
   findObjetivo,
+  findObjetivos,
   criarObjetivosPorAgregador,
   getByQuery,
   totalizaAgregador,
