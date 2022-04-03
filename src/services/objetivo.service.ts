@@ -233,7 +233,7 @@ async function recalculaAgencias (unidade: IUnidade, produtoId: number, user: IU
   const objetivosAG = await findObjetivos('AG', unidade.id, produtoId)
 
   objetivosSEV.forEach(obje => {
-    const novaMeta = obje.metaReferencia
+    const novaMeta = obje.metaAjustada
     const totalMetaAjustada =
             objetivosAG
               .filter(obja => obja.Unidade?.se === obje.unidadeId)
