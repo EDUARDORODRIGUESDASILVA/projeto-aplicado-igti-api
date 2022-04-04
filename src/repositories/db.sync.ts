@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 
 import db from './db.config'
+import Troca from './models/Troca'
 // import ObjetivoPorUnidade from './models/ObjetivoPorUnidade'
 // import Produto from './models/Produto'
 // import Unidade from './models/Unidade'
@@ -18,16 +19,17 @@ async function sync (req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const sync = false
+    const sync = true
     if (sync && isDev) {
       // await Produto.sync({ alter: isDev, force: false })
       // await Unidade.sync({ alter: isDev, force: false })
       // await Usuario.sync({ alter: isDev })
       // await ObjetivoPorUnidade.sync({ alter: isDev, force: false })
-
-      // await db.sync()
+      await Troca.sync({ alter: isDev })
+      await db.sync()
     }
   } catch (error) {
+    console.log(error)
     logger.error('Unable to sync database', error)
   }
   next()
