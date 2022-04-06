@@ -1,6 +1,6 @@
 
 export interface ITroca {
-    id: number
+    id?: number
     incrementaId: number
     reduzId: number
     produtoId: number

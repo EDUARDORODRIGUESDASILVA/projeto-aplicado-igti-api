@@ -7,6 +7,10 @@ import unidadeService from './unidade.service'
 import userService from './user.service'
 
 async function create (troca: ITroca) {
+  if (troca.id) {
+    delete troca.id
+  }
+
   const user = await userService.getLoggedUser()
   troca.userId = user.matricula
   return await trocaRepository.create(troca)
