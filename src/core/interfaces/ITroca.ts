@@ -1,10 +1,15 @@
+import IUser from './IUser'
 
+export type TrocaStatus = 'Criada' | 'Homologada' | 'Cancelada'
 export interface ITroca {
     id?: number
     incrementaId: number
     reduzId: number
     produtoId: number
-    userId: string
+    criadoUserId: string
     valor: number
-    status: 'OK' | 'Cancelada'
+    status: TrocaStatus
+    homologadoUserId: string
+    criador?: IUser
+    homologador?: IUser | null
 }

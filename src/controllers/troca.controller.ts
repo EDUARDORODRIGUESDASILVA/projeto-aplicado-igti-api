@@ -19,8 +19,6 @@ async function create (req: Request, res: Response, next: NextFunction) {
     }
 
     const input: ITroca = req.body
-    input.status = 'OK'
-    console.log(input)
     const c = await trocaService.create(input)
     return res.status(201).json(c)
   } catch (error) {
@@ -42,6 +40,30 @@ async function getRelatorio (req: Request, res: Response, next: NextFunction) {
   }
 }
 
+async function cancelarTroca (req: Request, res: Response, next: NextFunction) {
+  try {
+    const unidadeId = parseInt(req.params.unidadeId)
+    const c = await trocaService.cancelarTroca(unidadeId)
+    return res.status(200).send(c)
+  } catch (error) {
+    logger.error('[USER] Falha ao ao cancelar troca', error)
+    return res.status(500).send({ msg: 'Falha ao cancelar', error })
+    //  next(error)
+  }
+}
+
+async function homologarTroca (req: Request, res: Response, next: NextFunction) {
+  try {
+    const unidadeId = parseInt(req.params.unidadeId)
+    const c = await trocaService.homologarTroca(unidadeId)
+    return res.status(200).send(c)
+  } catch (error) {
+    logger.error('[USER] Falha ao ao homologar troca', error)
+    return res.status(500).send({ msg: 'Falha ao homologar', error })
+    //  next(error)
+  }
+}
+
 export default {
-  create, getRelatorio
+  create, getRelatorio, cancelarTroca, homologarTroca
 }

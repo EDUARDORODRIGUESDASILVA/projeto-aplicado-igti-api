@@ -4,7 +4,16 @@ import Troca from './models/Troca'
 import Usuario from './models/Usuario'
 
 async function getById (id: number): Promise<Troca> {
-  const troca = await Troca.findByPk(id)
+  const troca = await Troca.findByPk(id, {
+    include: [{
+      model: Usuario,
+      as: 'criador'
+    },
+    {
+      model: Usuario,
+      as: 'homologador'
+    }]
+  })
   if (!troca) {
     // @todo throw custom error
     throw new Error('not found')
@@ -62,7 +71,12 @@ async function getTrocas (query: ITrocaQueryInput): Promise<ITroca[]> {
       where,
       include: [
         {
-          model: Usuario
+          model: Usuario,
+          as: 'criador'
+        },
+        {
+          model: Usuario,
+          as: 'homologador'
         }
       ]
     })
