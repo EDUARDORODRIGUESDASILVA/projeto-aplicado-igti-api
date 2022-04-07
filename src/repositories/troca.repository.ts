@@ -1,6 +1,7 @@
 import { Op } from 'sequelize'
 import { ITroca } from '../core/interfaces/ITroca'
 import Troca from './models/Troca'
+import Usuario from './models/Usuario'
 
 async function getById (id: number): Promise<Troca> {
   const troca = await Troca.findByPk(id)
@@ -56,7 +57,15 @@ async function getTrocas (query: ITrocaQueryInput): Promise<ITroca[]> {
     }
   }
 
-  return await Troca.findAll({ where })
+  return await Troca.findAll(
+    {
+      where,
+      include: [
+        {
+          model: Usuario
+        }
+      ]
+    })
 }
 
 export default {
