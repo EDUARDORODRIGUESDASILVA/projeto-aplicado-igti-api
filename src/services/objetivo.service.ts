@@ -13,7 +13,7 @@ import unidadeService from './unidade.service'
 import userService from './user.service'
 import ObjetivoPorUnidade from '../repositories/models/ObjetivoPorUnidade'
 import { IUnidadeQueryInput } from '../repositories/unidade.repository'
-
+import trocaService from '../services/troca.service'
 async function create (objetivo: IObjetivoUnidade) {
   const user = await userService.getLoggedUser()
   // TODO VALIDAR SE USUÁRIO PODE INSERIR OBJETIVO - CONSTRUIR AUTORIZAÇÕES
@@ -104,6 +104,7 @@ async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number,
     query.nivel = 3
   }
 
+  const trocas = await trocaService.totalizarTrocasPorUnidade(unidadeId, produtoId)
   const rows: IObjetivoUnidade[] = await getByQuery(query)
   const userId: IUser = await userService.getLoggedUser()
   const ajuste: IAjustarProduto = {
@@ -115,7 +116,7 @@ async function getAjustePorAgregador (tipo: 'AG' | 'SE', unidadeId: number,
     metaMinima: 0,
     metaReferencia: t.metaReferencia,
     metaReferencia2: t.metaReferencia2,
-    trocas: 0,
+    trocas: trocas,
     metaAjustada: t.metaAjustada,
     trava: 'Livre',
     erros: parseInt(t.erros.toString()),
@@ -135,7 +136,7 @@ async function createOrUpdateObjetivoAgregador (unidadeId: number,
   const objetivosAG = await findObjetivos('AG', unidadeId, produtoId)
   const trava = findTrava(objetivosAG.map(oa => oa.trava))
   const objetivo: ObjetivoPorUnidade | null = await findObjetivo(unidadeId, produtoId)
-
+  const trocas = await trocaService.totalizarTrocasPorUnidade(unidadeId, produtoId)
   if (objetivo) {
     try {
       objetivo.metaReferencia = row.metaReferencia
@@ -143,7 +144,7 @@ async function createOrUpdateObjetivoAgregador (unidadeId: number,
       objetivo.metaAjustada = row.metaAjustada
       objetivo.userId = user.matricula
       objetivo.trava = trava
-      objetivo.trocas = row.trocas
+      objetivo.trocas = trocas
       objetivo.save()
       objetivosAG.forEach(o => { o.ativo = 1; o.save() })
       return objetivo
@@ -160,7 +161,7 @@ async function createOrUpdateObjetivoAgregador (unidadeId: number,
         metaReferencia2: row.metaReferencia2,
         metaAjustada: row.metaAjustada,
         metaMinima: 0,
-        trocas: row.trocas,
+        trocas: trocas,
         trava: trava,
         erros: 0,
         gravado: 0,
@@ -225,18 +226,18 @@ async function updateObjetivoLote (tipo: 'AG' | 'SE', unidadeId: number,
   await objetivoRepository.updateObjetivoLote(lote, user)
 
   if (tipo === 'SE' && unidade.tipo === 'SR') {
-    recalculaAgencias(unidade, produtoId, user)
+    recalculaAgencias(unidade.sr, produtoId, user)
   }
 
   if (tipo === 'AG' && unidade.tipo === 'SR') {
-    recalculaSE(unidade, produtoId, user, atualizaReferencia)
+    recalculaSE(unidade.sr, produtoId, user, atualizaReferencia)
   }
   return user
 }
 
-async function recalculaAgencias (unidade: IUnidade, produtoId: number, user: IUser) {
-  const objetivosSEV = await findObjetivos('SE', unidade.id, produtoId)
-  const objetivosAG = await findObjetivos('AG', unidade.id, produtoId)
+async function recalculaAgencias (srId: number, produtoId: number, user: IUser, updateUser: boolean = true) {
+  const objetivosSEV = await findObjetivos('SE', srId, produtoId)
+  const objetivosAG = await findObjetivos('AG', srId, produtoId)
 
   objetivosSEV.forEach(obje => {
     const novaMeta = obje.metaAjustada
@@ -246,13 +247,21 @@ async function recalculaAgencias (unidade: IUnidade, produtoId: number, user: IU
               .map(obja => obja.metaAjustada)
               .reduce((p, c) => p + c, 0)
 
+    const totalMetaReferencia2 =
+      objetivosAG
+        .filter(obja => obja.Unidade?.se === obje.unidadeId)
+        .map(obja => obja.metaReferencia2)
+        .reduce((p, c) => p + c, 0)
+
     objetivosAG
       .filter(obja => obja.Unidade?.se === obje.unidadeId)
       .forEach(obja => {
         obja.metaAjustada = novaMeta * (obja.metaAjustada / totalMetaAjustada)
-        obja.metaReferencia2 = novaMeta * (obja.metaAjustada / totalMetaAjustada)
-        obja.gravado = 0
-        obja.userId = user.matricula
+        obja.metaReferencia2 = novaMeta * (obja.metaReferencia2 / totalMetaReferencia2)
+        if (updateUser) {
+          obja.gravado = 0
+          obja.userId = user.matricula
+        }
         obja.verificaErros()
         obja.save()
       })
@@ -276,9 +285,27 @@ function findTrava (travas: string[]) {
   return 'Livre'
 }
 
-async function recalculaSE (unidade: IUnidade, produtoId: number, user: IUser, atualizaReferencia: boolean) {
-  const objetivosSEV = await findObjetivos('SE', unidade.id, produtoId)
-  const objetivosAG = await findObjetivos('AG', unidade.id, produtoId)
+async function recalculaTrocasSE (srId: number, produtoId: number) {
+  const objetivosSEV = await findObjetivos('SE', srId, produtoId)
+
+  objetivosSEV.forEach(async (objetivo) => {
+    const total = await trocaService.totalizarTrocasPorUnidade(objetivo.unidadeId, produtoId)
+    const trocaAnterior = objetivo.trocas
+    const diferenca = total - trocaAnterior
+    objetivo.trocas = total
+    objetivo.metaAjustada = objetivo.metaAjustada + diferenca
+    // objetivo.metaReferencia2 = objetivo.metaReferencia2 + diferenca
+    objetivo.verificaErros()
+    objetivo.save()
+  })
+
+  const user = await userService.getLoggedUser()
+  recalculaAgencias(srId, produtoId, user, false)
+}
+
+async function recalculaSE (srId: number, produtoId: number, user: IUser, atualizaReferencia: boolean) {
+  const objetivosSEV = await findObjetivos('SE', srId, produtoId)
+  const objetivosAG = await findObjetivos('AG', srId, produtoId)
 
   const totalMetaReferencia =
     objetivosAG
@@ -287,7 +314,7 @@ async function recalculaSE (unidade: IUnidade, produtoId: number, user: IUser, a
 
   const totalMetaReferencia2 =
     objetivosAG
-      .map(obja => obja.metaReferencia)
+      .map(obja => obja.metaReferencia2)
       .reduce((p, c) => p + c, 0)
 
   const totalAjustada =
@@ -296,7 +323,7 @@ async function recalculaSE (unidade: IUnidade, produtoId: number, user: IUser, a
       .reduce((p, c) => p + c, 0)
 
   const trava = findTrava(objetivosAG.map(oa => oa.trava))
-  objetivosSEV.forEach(obje => {
+  objetivosSEV.forEach(async (obje) => {
     const totalMetaAjustadaSEV =
         objetivosAG
           .filter(obja => obja.Unidade?.se === obje.unidadeId)
@@ -308,9 +335,9 @@ async function recalculaSE (unidade: IUnidade, produtoId: number, user: IUser, a
         .map(obja => obja.metaReferencia2)
         .reduce((p, c) => p + c, 0)
 
-    obje.metaAjustada = totalMetaReferencia * (totalMetaAjustadaSEV / totalMetaReferencia2)
+    obje.metaAjustada = (totalMetaReferencia) * (totalMetaAjustadaSEV / totalAjustada)
     if (atualizaReferencia) {
-      obje.metaReferencia2 = totalMetaReferencia * (totalMetaReferencia2SEV / totalAjustada)
+      obje.metaReferencia2 = (totalMetaReferencia) * (totalMetaReferencia2SEV / totalMetaReferencia2)
     }
 
     obje.trava = trava
@@ -332,5 +359,6 @@ export default {
   getByQuery,
   totalizaAgregador,
   getAjustePorAgregador,
-  updateObjetivoLote
+  updateObjetivoLote,
+  recalculaTrocasSE
 }

@@ -1,5 +1,5 @@
 import { Op } from 'sequelize'
-import { ITroca } from '../core/interfaces/ITroca'
+import { ITroca, TrocaStatus } from '../core/interfaces/ITroca'
 import Troca from './models/Troca'
 import Usuario from './models/Usuario'
 
@@ -45,6 +45,7 @@ async function deleteById (id: number): Promise<boolean> {
 export interface ITrocaQueryInput {
   unidadeId?: number
   produtoId?: number
+  status?: TrocaStatus
 }
 
 async function getTrocas (query: ITrocaQueryInput): Promise<ITroca[]> {
@@ -52,8 +53,8 @@ async function getTrocas (query: ITrocaQueryInput): Promise<ITroca[]> {
   if (query.unidadeId) {
     where = {
       [Op.or]: [
-        { increm: query.unidadeId },
-        { authorId: query.unidadeId }
+        { incrementaId: query.unidadeId },
+        { reduzId: query.unidadeId }
       ]
     }
   }
@@ -61,6 +62,15 @@ async function getTrocas (query: ITrocaQueryInput): Promise<ITroca[]> {
     where = {
       [Op.and]: [
         { produtoId: query.produtoId },
+        { ...where }
+      ]
+    }
+  }
+
+  if (query.status) {
+    where = {
+      [Op.and]: [
+        { status: query.status },
         { ...where }
       ]
     }

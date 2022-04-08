@@ -79,7 +79,7 @@ async function findObjetivo (unidadeId: number, produtoId: number): Promise<Obje
   return objetivo
 }
 
-export interface IQueryFindObjetivos{
+export interface IQueryFindObjetivos {
   sr?: number,
   nivel?: number,
   produtoId?: number
@@ -88,12 +88,12 @@ export class FindObjetivosReturn extends ObjetivoPorUnidade {
   Unidade?: Unidade
 }
 async function findObjetivos (query: IQueryFindObjetivos): Promise<FindObjetivosReturn[]> {
-  const queryObjetivo: {produtoId?: number } = {}
+  const queryObjetivo: { produtoId?: number } = {}
   if (query.produtoId) {
     queryObjetivo.produtoId = query.produtoId
   }
 
-  const queryUn: {sr?: number, nivel?: number} = {}
+  const queryUn: { sr?: number, nivel?: number } = {}
   if (query.sr && query.nivel) {
     queryUn.sr = query.sr
     queryUn.nivel = query.nivel
@@ -247,5 +247,14 @@ async function getByQuery (query: IObjetivoQueryInput): Promise<IObjetivoUnidade
 }
 
 export default {
-  create, deleteById, update, getById, findObjetivo, findObjetivos, getByQuery, getByProdutoId, totalizaAgregador, updateObjetivoLote
+  create,
+  deleteById,
+  update,
+  getById,
+  findObjetivo,
+  findObjetivos,
+  getByQuery,
+  getByProdutoId,
+  totalizaAgregador,
+  updateObjetivoLote
 }

@@ -158,10 +158,7 @@ ObjetivoPorUnidade.init({
   // paranoid: true
 })
 
-// TODO FIX RELATIONS ON OBJETIVO POR UNIDADE
 ObjetivoPorUnidade.belongsTo(Unidade, { foreignKey: 'unidadeId' })
-// Venda.hasOne(Cliente)
-
 ObjetivoPorUnidade.belongsTo(Produto, { foreignKey: 'produtoId' })
 ObjetivoPorUnidade.belongsTo(Usuario, { foreignKey: 'userId' })
 // Venda.hasOne(Livro)
