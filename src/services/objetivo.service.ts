@@ -241,6 +241,7 @@ async function recalculaAgencias (srId: number, produtoId: number, user: IUser, 
 
   objetivosSEV.forEach(obje => {
     const novaMeta = obje.metaAjustada
+    const trocas = obje.trocas
     const totalMetaAjustada =
             objetivosAG
               .filter(obja => obja.Unidade?.se === obje.unidadeId)
@@ -256,6 +257,7 @@ async function recalculaAgencias (srId: number, produtoId: number, user: IUser, 
     objetivosAG
       .filter(obja => obja.Unidade?.se === obje.unidadeId)
       .forEach(obja => {
+        obja.trocas = trocas * (obja.metaAjustada / totalMetaAjustada)
         obja.metaAjustada = novaMeta * (obja.metaAjustada / totalMetaAjustada)
         obja.metaReferencia2 = novaMeta * (obja.metaReferencia2 / totalMetaReferencia2)
         if (updateUser) {
@@ -294,7 +296,7 @@ async function recalculaTrocasSE (srId: number, produtoId: number) {
     const diferenca = total - trocaAnterior
     objetivo.trocas = total
     objetivo.metaAjustada = objetivo.metaAjustada + diferenca
-    // objetivo.metaReferencia2 = objetivo.metaReferencia2 + diferenca
+    objetivo.metaReferencia2 = objetivo.metaReferencia2 + diferenca
     objetivo.verificaErros()
     objetivo.save()
   })
