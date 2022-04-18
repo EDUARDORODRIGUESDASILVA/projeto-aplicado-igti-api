@@ -13,8 +13,8 @@ function createConnection (): Sequelize {
     const dbUser = process.env.DB_USER as string
     const dbHost = process.env.DB_HOST
     const dbPassword = process.env.DB_PASSWORD
-    return new Sequelize(dbName, dbUser, dbPassword, {
 
+    return new Sequelize(dbName, dbUser, dbPassword, {
       host: dbHost,
       dialect: dbDriver,
       define: {

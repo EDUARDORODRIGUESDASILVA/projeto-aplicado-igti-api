@@ -4,7 +4,6 @@ import sequelizeConnection from '../db.config'
 import Produto from './Produto'
 import Unidade from './Unidade'
 import Usuario from './Usuario'
-
 interface ObjetivoPorUnidadeAttributes extends IObjetivoUnidade {
   icOrdem?: number;
   createdAt?: Date;
@@ -161,6 +160,5 @@ ObjetivoPorUnidade.init({
 ObjetivoPorUnidade.belongsTo(Unidade, { foreignKey: 'unidadeId' })
 ObjetivoPorUnidade.belongsTo(Produto, { foreignKey: 'produtoId' })
 ObjetivoPorUnidade.belongsTo(Usuario, { foreignKey: 'userId' })
-// Venda.hasOne(Livro)
 
 export default ObjetivoPorUnidade

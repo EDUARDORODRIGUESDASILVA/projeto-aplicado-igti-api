@@ -4,7 +4,6 @@ import sequelizeConnection from '../db.config'
 import Produto from './Produto'
 import Unidade from './Unidade'
 import Usuario from './Usuario'
-
 interface TrocaAttributes extends ITroca {
   createdAt?: Date;
   updatedAt?: Date;
@@ -66,7 +65,6 @@ Troca.init({
     type: DataTypes.STRING,
     allowNull: false
   }
-
 }, {
   timestamps: true,
   sequelize: sequelizeConnection,

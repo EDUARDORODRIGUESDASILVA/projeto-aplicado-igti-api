@@ -83,6 +83,5 @@ Unidade.init({
   // paranoid: true
 })
 Unidade.hasOne(Unidade, { foreignKey: 'vinc' })
-// Unidade.hasOne(Unidade, { as: 'SEV', foreignKey: 'se' })
 
 export default Unidade

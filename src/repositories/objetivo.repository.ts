@@ -180,7 +180,6 @@ async function totalizaAgregador (query: IQueryTotalizaAgregadorInput): Promise<
     })
   return res
 }
-
 export interface IUpdateObjetivoLoteInput {
   id: number,
   metaAjustada: number
