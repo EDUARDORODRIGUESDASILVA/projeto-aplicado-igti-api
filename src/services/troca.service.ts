@@ -72,7 +72,6 @@ async function totalizarTrocasPorUnidade (unidadeId: number, produtoId: number):
   }
   const trocas = await getTrocas(q)
   const total = trocas.map(t => t.valor * (t.reduzId === unidadeId ? -1 : 1)).reduce((p, c) => p + c, 0)
-  console.log(trocas, total)
   return total
 }
 

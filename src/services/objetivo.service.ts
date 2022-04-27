@@ -188,6 +188,7 @@ async function criarObjetivosPorAgregador (unidadeId: number): Promise<IObjetivo
     return criarObjetivosPorSE(unidadeId, user)
   }
 
+  // caso o agregador seja SR
   const query: IUnidadeQueryInput = {
     vinc: unidadeId
   }

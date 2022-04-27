@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 import logger from '../lib/logger'
 
 import db from './db.config'
-import Troca from './models/Troca'
+// import Troca from './models/Troca'
+// import Usuario from './models/Usuario'
 // import ObjetivoPorUnidade from './models/ObjetivoPorUnidade'
 // import Produto from './models/Produto'
 // import Unidade from './models/Unidade'
@@ -23,9 +24,9 @@ async function sync (req: Request, res: Response, next: NextFunction) {
     if (sync && isDev) {
       // await Produto.sync({ alter: isDev, force: false })
       // await Unidade.sync({ alter: isDev, force: false })
-      // await Usuario.sync({ alter: isDev })
+      // await Usuario.sync({ alter: isDev, force: true })
       // await ObjetivoPorUnidade.sync({ alter: isDev, force: false })
-      await Troca.sync({ alter: isDev })
+      // await Troca.sync({ alter: isDev, force: true })
       await db.sync()
     }
   } catch (error) {

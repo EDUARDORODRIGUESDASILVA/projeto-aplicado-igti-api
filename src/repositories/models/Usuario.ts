@@ -17,6 +17,13 @@ class Usuario extends Model<UsuarioAttributes, UsuarioAttributes> implements Usu
     public funcao!: string;
     public unidadeId!: number;
 
+   // perfil
+   public autorizadoId!: number;
+   public admin!: boolean;
+   public leitura!: boolean;
+   public gravacao!: boolean;
+   public prazo!: Date;
+
     // timestamps!
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -41,6 +48,30 @@ Usuario.init({
   unidadeId: {
     type: DataTypes.INTEGER,
     allowNull: false
+  },
+  autorizadoId: {
+    type: DataTypes.INTEGER,
+    allowNull: false
+  },
+  admin: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
+  leitura: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
+  },
+  gravacao: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
+  prazo: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null
   }
 }, {
   timestamps: true,
@@ -49,4 +80,6 @@ Usuario.init({
   paranoid: true
 })
 Usuario.belongsTo(Unidade, { foreignKey: 'unidadeId' })
+Usuario.belongsTo(Unidade, { foreignKey: 'autorizadoId', as: 'autorizacao', targetKey: 'id' })
+
 export default Usuario

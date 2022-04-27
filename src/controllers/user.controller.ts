@@ -4,6 +4,16 @@ import IUser from '../core/interfaces/IUser'
 import logger from '../lib/logger'
 import userService from '../services/user.service'
 
+async function getUsersByAutorizacao (req: Request, res: Response, next: NextFunction) {
+  try {
+    // const c = await userService.getLoggedUser()
+    const users = await userService.getUsersByAutorizacao(2625)
+    return res.status(200).send(users)
+  } catch (error: Error | any) {
+    logger.error('[USER] Falha ao buscar usuários', error)
+    return res.status(403).send({ msg: 'Falha ao buscar usuários' })
+  }
+}
 async function getByMatricula (req: Request, res: Response, next: NextFunction) {
   try {
     const matricula = req.params.matricula
@@ -82,5 +92,5 @@ async function destroy (req: Request, res: Response, next: NextFunction) {
 }
 
 export default {
-  getLoggedUser, getByMatricula, create, update, destroy
+  getLoggedUser, getByMatricula, create, update, destroy, getUsersByAutorizacao
 }

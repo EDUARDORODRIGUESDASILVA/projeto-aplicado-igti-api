@@ -15,6 +15,11 @@ async function getNtmlUser (): Promise<string> {
   return await Promise.resolve('C090695')
 }
 
+async function getUsersByAutorizacao (unidadeAutorizacaoId: number) {
+  // const unidade = await unidadeService.getById(unidadeAutorizacaoId)
+  return await userRepository.getUsersByAutorizacao()
+}
+
 async function createUser (user: IUser) {
   return await userRepository.create(user)
 }
@@ -29,5 +34,5 @@ async function deleteByMatricula (matricula: string): Promise<boolean> {
 }
 
 export default {
-  getUserByMatricula, getLoggedUser, createUser, update, deleteByMatricula
+  getUserByMatricula, getLoggedUser, createUser, update, deleteByMatricula, getUsersByAutorizacao
 }
