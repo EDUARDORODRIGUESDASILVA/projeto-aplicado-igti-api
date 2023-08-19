@@ -35,6 +35,23 @@ function createConnection (): Sequelize {
       })
   }
 
+  if (dbDriver === 'mysql') {
+    const connstring = process.env.DB_CONNECTION_STRING as string
+    return new Sequelize(connstring,
+      {
+        dialect: 'mysql',
+        dialectOptions: {
+          ssl: {
+            rejectUnauthorized: false
+          }
+        },
+        define: {
+          timestamps: false
+        },
+        logging: (msg) => logger.debug(msg)
+      })
+  }
+
   return new Sequelize({
     dialect: 'sqlite',
     storage: process.env.SQL_LITE_STORAGE
